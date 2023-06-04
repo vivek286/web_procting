@@ -14,7 +14,7 @@ const Stream = require('stream');
 const socket = io('http://localhost:5000');
 function App() {
 	const [ me, setMe ] = useState("")
-	const [ stream, setStream ] = useState()
+	const [ stream, setStream ] = useState<any>()
 	const [ receivingCall, setReceivingCall ] = useState(false)
 	const [ caller, setCaller ] = useState("")
 	const [secon,setsecons]=useState(false);
@@ -25,25 +25,27 @@ function App() {
 	const [ name, setName ] = useState("")
     const [user_name,setuser_name]=useState("");
     const [users,setusers]=useState({id:"",name:""});
-	const myVideo = useRef()
+	const myVideo = useRef<any>(new ReadableStream())
 	const userVideo = useRef() 
-	const connectionRef= useRef()
+	const connectionRef= useRef<any>()
 	const [peers, setPeers] = useState([]);
 	const videoRef = useRef();
     const[room_id,setroom_id]=useState("");
-	const [peerConnections, setPeerConnections] = useState([]);
+	const [peerConnections, setPeerConnections] = useState<any>([]);
 	useEffect(() => {
         let curr_url=window.location.href;
          let temp=curr_url.split("rooms/")[1];
          setroom_id(temp);
         // alert(room_id);
         
-        // socket.join(room_id);
+        // socket.join(room_id); 
 
 		navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then((stream) => {
 			setStream(stream)
-				myVideo.current.srcObject = stream
-		 
+			if(stream){
+				myVideo.current.srcObject = stream;
+				// console
+			}
 		})
 		socket.emit("me",room_id);
 	socket.on("me", (id) => {
@@ -134,7 +136,7 @@ function App() {
 	}
 
 	function handleNewConnection(peer:any) {
-		setPeerConnections(prevConnections => [...prevConnections, peer]);
+		setPeerConnections((prevConnections:any)  => [...prevConnections, peer]);
 		// setPeerConnections([...peerConnections, peer]);
 		let video = document.getElementById(peer.peerId);
 			// if (video) {
@@ -158,16 +160,16 @@ function App() {
 		<>
 			<h1 style={{ textAlign: "center", color: '#fff' }}>Skill Board Procting</h1>
 		<div className="container">
-			{Object.keys(socket).length}
+			{/* {Object.keys(socket).length} */}
             {/* {soc} */}
             {JSON.stringify(users)}
-			<div className="video-container">
+			<div className="video-container"> 
 				<div className="video">
 					{stream &&  <video playsInline muted ref={myVideo} autoPlay style={{ width: "300px" }} />}
 					Your video
 				</div>  
 				{/* <div className="video">
-					{callAccepted && !callEnded ?
+					{callAccepted && !callEnded ? 
 
 						<div className="video">
 						{peerConnections.map(peer =>  (

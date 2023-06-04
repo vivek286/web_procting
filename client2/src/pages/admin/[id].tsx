@@ -11,28 +11,28 @@ import io from "socket.io-client"
 // import "./App.css"
 
 
-const socket = io.connect('http://localhost:5000');
+const socket = io('http://localhost:5000');
 function App() {
 	const [ me, setMe ] = useState("")
-	const [ stream, setStream ] = useState()
+	const [ stream, setStream ] = useState<any>()
 	const [ receivingCall, setReceivingCall ] = useState(false)
 	const [ caller, setCaller ] = useState("")
 	const [secon,setsecons]=useState(false);
-	const [ callerSignal, setCallerSignal ] = useState()
+	const [ callerSignal, setCallerSignal ] = useState<any>()
 	const [ callAccepted, setCallAccepted ] = useState(false)
 	const [ idToCall, setIdToCall ] = useState("")
 	const [ callEnded, setCallEnded] = useState(false)
 	const [ name, setName ] = useState("")
     const [user_name,setuser_name]=useState("admin");
     const [users,setusers]=useState([{id:"",name:""}]);
-	const myVideo = useRef()
+	const myVideo = useRef<any>({})
 	const userVideo = useRef()
-	const connectionRef= useRef()
+	const connectionRef= useRef<any>()
 	const [peers, setPeers] = useState([]);
-	const videoRef = useRef();
+	const videoRef = useRef(); 
     const[room_id,setroom_id]=useState("");
-	const [peerConnections, setPeerConnections] = useState([]);
-	useEffect(() => {
+	const [peerConnections, setPeerConnections] = useState<any>([]);
+	useEffect(() => { 
         let curr_url=window.location.href;
          let temp=curr_url.split("admin/")[1];
          setroom_id(temp);
@@ -43,7 +43,11 @@ function App() {
  
 		navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then((stream) => {
 			setStream(stream)
+
+			if(stream){
 				myVideo.current.srcObject = stream
+				console.log("MY video",myVideo);
+		}
 				 
 		})
 		// socket.emit("me",room_id);
@@ -67,7 +71,7 @@ function App() {
 	}, [peerConnections])
      
 
-	const callUser = (id) => {
+	const callUser = (id:string) => {
 		const peer = new Peer({
 			initiator: true,
 			trickle: false,
@@ -88,7 +92,7 @@ function App() {
 				peerId: name,
 				stream: stream,
 			  };
-			  setPeerConnections(prevConnections => [...prevConnections, temp]);
+			  setPeerConnections((prevConnections:any) => [...prevConnections, temp]);
 				// userVideo.current.srcObject = stream
 				
 		})
@@ -117,7 +121,7 @@ function App() {
 				peerId: name,
 				stream: stream,
 			  };
-			  setPeerConnections(prevConnections => [...prevConnections, temp]);
+			  setPeerConnections((prevConnections :any)=> [...prevConnections, temp]);
 			console.log("in line 88");
 			// userVideo.current.srcObject = stream
 		})
@@ -132,9 +136,9 @@ function App() {
 		connectionRef?.current?.destroy()
 	}
  
-	function handleNewConnection(peer) {
+	function handleNewConnection(peer:any) {
 		// setPeerConnections(prevConnections => [...prevConnections, peer]);
-		let video = document.getElementById(peer.peerId);
+		let video:any = document.getElementById(peer.peerId);
 		console.log(video,"video html element")
 			if (video) {
 				video.srcObject = peer.stream;
@@ -166,7 +170,7 @@ function App() {
 					{callAccepted && !callEnded ?
 
 						<div className="video">
-						{peerConnections.map(peer => (
+						{peerConnections.map((peer:any) => (
 							<div key={peer?.peerId}>
 								 
 								<br/>
@@ -214,7 +218,7 @@ function App() {
 				{(receivingCall && !callAccepted||(true)) ? (
 					
 						<div className="caller">
-							{console.log(peerConnections)}
+							{JSON.stringify(peerConnections)}
 						<h1 >{name} is calling...</h1>
 						<button  color="primary" onClick={answerCall}>
 							Answer
